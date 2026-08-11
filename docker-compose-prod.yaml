@@ -1,0 +1,30 @@
+services:
+  server:
+    image: node:24-bookworm
+    working_dir: /server
+    volumes:
+      - .:/server
+    expose:
+      - "3000"
+    command: ["node", "server.js"]
+    networks:
+      - internal
+
+
+  nginx:
+    image: nginx:1.30
+    networks:
+      - internal
+      - caddy-ingress
+    labels:
+      caddy: nodeapp.dev1.mnt.group
+      caddy.reverse_proxy: "{{upstreams 80}}"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - .:/usr/share/nginx/html:ro
+      - ./nginx/.htpasswd:/etc/nginx/.htpasswd:ro
+
+networks:
+  internal:
+  caddy-ingress:
+    external: true
