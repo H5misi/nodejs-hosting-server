@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Node.js App</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+
+            text-align: center;
+
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            padding: 10px 20px;
+
+            border: none;
+            border-radius: 6px;
+
+            background: #007bff;
+            color: white;
+
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h1>Hello from Node.js 🚀</h1>
+
+        <p id="message">
+            This page is served by the Node.js backend.
+        </p>
+
+        <button onclick="changeMessage()">
+            Click me
+        </button>
+    </div>
+
+    <script>
+        function changeMessage() {
+            const message = document.getElementById("message");
+
+            if (message.textContent.trim() === "This page is served by the Node.js backend.") {
+                message.textContent = "Frontend JavaScript is working!";
+            } else {
+                message.textContent = "This page is served by the Node.js backend.";
+            }
+        }
+    </script>
+
+</body>
+</html>
