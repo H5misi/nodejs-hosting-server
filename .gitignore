@@ -1,3 +1,7 @@
+# 
+# nginx/.htpasswd
+
+
 # Logs
 logs
 *.log
