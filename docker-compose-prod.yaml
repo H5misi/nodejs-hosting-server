@@ -1,7 +1,6 @@
 services:
   server:
-    image: node-image
-
+    image: ghcr.io/h5misi/nodejs-image:1.0
     expose:
       - "3000"
     command: ["node", "server.js"]
