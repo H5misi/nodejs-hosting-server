@@ -74,6 +74,12 @@ jobs:
         run: |
           ssh-keyscan -H dev1.mnt.group >> ~/.ssh/known_hosts
 
+      - name: Prepare deployment directories
+        run: |
+          ssh -i ~/.ssh/github_actions meow@dev1.mnt.group '
+            mkdir -p /home/meow/hazem/nodejs-hosting-server/nginx
+          '
+
       - name: Copy deployment files to server
         run: |
           scp -i ~/.ssh/github_actions \
