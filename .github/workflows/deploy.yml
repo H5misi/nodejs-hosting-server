@@ -25,16 +25,61 @@ jobs:
       - name: Run tests
         run: npm test
 
+  build-and-push-image:
+    # Build Docker image and publish it to GHCR
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t ghcr.io/h5misi/nodejs-image:1.0 \
+            .
+
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/h5misi/nodejs-image:1.0
+
   deploy:
   # cd
     needs: build-and-test
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Copy deployment files to server
+        run: |
+          scp docker-compose-prod.yaml \
+            meow@dev1.mnt.group:/home/meow/hazem/nodejs-hosting-server/
+
+          scp nginx/nginx.conf \
+            meow@dev1.mnt.group:/home/meow/hazem/nodejs-hosting-server/nginx/
+
+          scp nginx/.htpasswd \
+            meow@dev1.mnt.group:/home/meow/hazem/nodejs-hosting-server/nginx/
+
       - name: Deploy to server
         run: |
           ssh meow@dev1.mnt.group '
             cd /home/meow/hazem/nodejs-hosting-server &&
             git pull &&
+            docker compose -f docker-compose-prod.yml downup -d
             docker compose -f docker-compose-prod.yml up -d
           '
