@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-test:
-  # ci
+    # CI
     runs-on: ubuntu-latest
 
     steps:
@@ -56,13 +56,18 @@ jobs:
           docker push ghcr.io/h5misi/nodejs-image:1.0
 
   deploy:
-  # cd
-    needs: build-and-test
+    # CD
+    needs: build-and-push-image
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H dev1.mnt.group >> ~/.ssh/known_hosts
 
       - name: Copy deployment files to server
         run: |
@@ -79,7 +84,6 @@ jobs:
         run: |
           ssh meow@dev1.mnt.group '
             cd /home/meow/hazem/nodejs-hosting-server &&
-            git pull &&
-            docker compose -f docker-compose-prod.yml downup -d
-            docker compose -f docker-compose-prod.yml up -d
+            docker compose -f docker-compose-prod.yaml pull &&
+            docker compose -f docker-compose-prod.yaml up -d
           '
