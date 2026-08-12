@@ -1,9 +1,7 @@
 services:
   server:
-    image: node:24-bookworm
-    working_dir: /server
-    volumes:
-      - .:/server
+    image: node-image
+
     expose:
       - "3000"
     command: ["node", "server.js"]
