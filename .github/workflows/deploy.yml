@@ -64,25 +64,33 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Add server to known hosts
+      - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
+          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/github_actions
+          chmod 600 ~/.ssh/github_actions
+
+      - name: Add server to known hosts
+        run: |
           ssh-keyscan -H dev1.mnt.group >> ~/.ssh/known_hosts
 
       - name: Copy deployment files to server
         run: |
-          scp docker-compose-prod.yaml \
+          scp -i ~/.ssh/github_actions \
+            docker-compose-prod.yaml \
             meow@dev1.mnt.group:/home/meow/hazem/nodejs-hosting-server/
 
-          scp nginx/nginx.conf \
+          scp -i ~/.ssh/github_actions \
+            nginx/nginx.conf \
             meow@dev1.mnt.group:/home/meow/hazem/nodejs-hosting-server/nginx/
 
-          scp nginx/.htpasswd \
+          scp -i ~/.ssh/github_actions \
+            nginx/.htpasswd \
             meow@dev1.mnt.group:/home/meow/hazem/nodejs-hosting-server/nginx/
 
       - name: Deploy to server
         run: |
-          ssh meow@dev1.mnt.group '
+          ssh -i ~/.ssh/github_actions meow@dev1.mnt.group '
             cd /home/meow/hazem/nodejs-hosting-server &&
             docker compose -f docker-compose-prod.yaml pull &&
             docker compose -f docker-compose-prod.yaml up -d
