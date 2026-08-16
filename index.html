@@ -56,19 +56,32 @@
             This page is served by the Node.js backend.
         </p>
 
-        <button onclick="changeMessage()">
+        <button onclick="getBackendMessage()">
             Click me
         </button>
     </div>
 
     <script>
-        function changeMessage() {
+        async function getBackendMessage() {
             const message = document.getElementById("message");
 
-            if (message.textContent.trim() === "This page is served by the Node.js backend.") {
-                message.textContent = "Frontend JavaScript is working!";
-            } else {
-                message.textContent = "This page is served by the Node.js backend.";
+            message.textContent = "Calling backend...";
+
+            try {
+                const response = await fetch("/message");
+
+                if (!response.ok) {
+                    throw new Error("Request failed");
+                }
+
+                const data = await response.json();
+
+                message.textContent = data.message;
+
+                console.log("Backend response:", data);
+            } catch (error) {
+                console.error("Backend error:", error);
+                message.textContent = "Failed to contact backend.";
             }
         }
     </script>
