@@ -1,40 +1,40 @@
-const http = require("http");
+const express = require("express");
 const fs = require("fs");
 const path = require("path");
 
 const PORT = 3000;
 
-const server = http.createServer((req, res) => {
-    if (req.url === "/" && req.method === "GET") {
-        const filePath = path.join(__dirname, "index.html");
+const app = express();
 
-        fs.readFile(filePath, (err, data) => {
-            if (err) {
-                res.writeHead(500, {
-                    "Content-Type": "text/plain",
-                });
+// GET /
+app.get("/", (req, res) => {
+    const filePath = path.join(__dirname, "index.html");
 
-                res.end("Internal Server Error");
-                return;
-            }
+    fs.readFile(filePath, (err, data) => {
+        if (err) {
+            console.error("Failed to read index.html:", err);
+            return res.status(500).send("Internal Server Error");
+        }
 
-            res.writeHead(200, {
-                "Content-Type": "text/html",
-            });
-
-            res.end(data);
-        });
-
-        return;
-    }
-
-    res.writeHead(404, {
-        "Content-Type": "text/plain",
+        res.type("html").send(data);
     });
-
-    res.end("404 - Not Found");
 });
 
-server.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+// GET /message
+app.get("/message", (req, res) => {
+    console.log("Backend received a request for /message");
+
+    res.json({
+        message: "Hello from the Express backend!",
+        timestamp: new Date().toISOString(),
+    });
+});
+
+// 404
+app.use((req, res) => {
+    res.status(404).send("404 - Not Found");
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
