@@ -98,6 +98,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/github_actions meow@dev1.mnt.group '
             cd /home/meow/hazem/nodejs-hosting-server &&
+            docker compose -f docker-compose-prod.yaml down &&
             docker compose -f docker-compose-prod.yaml pull &&
             docker compose -f docker-compose-prod.yaml up -d
           '
